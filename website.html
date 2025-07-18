@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepGuard Pro - Deepfake Detection & Privacy Risk Assessment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #4a5568;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo::before {
+            content: "🛡️";
+            font-size: 2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        main {
+            margin-top: 80px;
+            padding: 2rem 0;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #fff, #f0f4f8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-card h3 {
+            color: #4a5568;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .feature-card p {
+            color: #718096;
+            line-height: 1.6;
+        }
+
+        .upload-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3rem;
+            border-radius: 20px;
+            margin: 4rem 0;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .upload-area.dragging {
+            border-color: #764ba2;
+            background: rgba(102, 126, 234, 0.1);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            font-size: 1.2rem;
+            color: #4a5568;
+            margin-bottom: 1rem;
+        }
+
+        .upload-subtext {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .contract-analysis-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3rem;
+            border-radius: 20px;
+            margin: 4rem 0;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .contract-input-area {
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .contract-textarea {
+            width: 100%;
+            min-height: 300px;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1rem;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        .contract-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .contract-textarea::placeholder {
+            color: #a0aec0;
+            line-height: 1.6;
+        }
+
+        .analyze-contract-btn {
+            background: linear-gradient(45deg, #48bb78, #38a169);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .analyze-contract-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(72, 187, 120, 0.3);
+        }
+
+        .contract-results {
+            display: none;
+            margin-top: 2rem;
+        }
+
+        .risk-category {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .risk-category h4 {
+            color: #4a5568;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .risk-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            border-left: 4px solid #e2e8f0;
+        }
+
+        .risk-item.high {
+            border-left-color: #e53e3e;
+            background: #fed7d7;
+        }
+
+        .risk-item.medium {
+            border-left-color: #ed8936;
+            background: #feebc8;
+        }
+
+        .risk-item.low {
+            border-left-color: #48bb78;
+            background: #c6f6d5;
+        }
+
+        .analysis-section {
+            display: none;
+            margin-top: 2rem;
+        }
+
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .analysis-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .risk-meter {
+            width: 100%;
+            height: 20px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .risk-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .risk-low { background: linear-gradient(45deg, #48bb78, #68d391); }
+        .risk-medium { background: linear-gradient(45deg, #ed8936, #f6ad55); }
+        .risk-high { background: linear-gradient(45deg, #e53e3e, #fc8181); }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .image-preview {
+            max-width: 300px;
+            max-height: 300px;
+            border-radius: 10px;
+            margin: 1rem auto;
+            display: block;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .technical-details {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .platform-selection {
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .platform-selection label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .platform-selection select {
+            padding: 0.8rem 1.5rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+        }
+
+        .platform-selection select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .tos-preview {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 2rem;
+        }
+
+        .tab-button {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #718096;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-button.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .summary-score {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .summary-score h3 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-score p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .analysis-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .auth-buttons {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab-button {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">DeepGuard Pro</div>
+            <ul class="nav-links">
+                <li><a href="#home">Ana Sayfa</a></li>
+                <li><a href="#features">Özellikler</a></li>
+                <li><a href="#upload">Analiz</a></li>
+                <li><a href="#contract">Sözleşme</a></li>
+                <li><a href="#about">Hakkımızda</a></li>
+            </ul>
+            <div class="auth-buttons">
+                <a href="#" class="btn btn-secondary">Giriş Yap</a>
+                <a href="#" class="btn btn-primary">Kaydol</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero" id="home">
+            <div class="container">
+                <h1>Deepfake Tespiti & Gizlilik Risk Analizi</h1>
+                <p>Gerçek AI modellerle deepfake tespiti ve kapsamlı sözleşme risk analizi</p>
+                <a href="#upload" class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;">Analiz Başlat</a>
+            </div>
+        </section>
+
+        <section class="features" id="features">
+            <div class="container">
+                <div class="feature-card">
+                    <h3>🔍 Gerçek AI Deepfake Tespiti</h3>
+                    <p>Görsel özellik analizi, yüz simetrisi, piksel anomalileri ve metadata kontrolü ile gerçek deepfake tespiti yapıyoruz.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📜 Kapsamlı Sözleşme Analizi</h3>
+                    <p>Platform gizlilik politikalarını ve üyelik sözleşmelerini NLP ile analiz ederek detaylı risk değerlendirmesi yapıyoruz.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚖️ Akıllı Risk Skorlama</h3>
+                    <p>Yüksek, orta ve düşük risk kategorilerinde detaylı analiz sonuçları ve öneriler sunuyoruz.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ Anında Sonuçlar</h3>
+                    <p>Görsel analizi ve metin işleme algoritmalarımız ile saniyeler içinde kapsamlı risk değerlendirmesi.</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="container">
+            <div class="tabs">
+                <button class="tab-button active" onclick="switchTab('image')">🖼️ Görsel Analizi</button>
+                <button class="tab-button" onclick="switchTab('contract')">📝 Sözleşme Analizi</button>
+            </div>
+
+            <div class="tab-content active" id="imageTab">
+                <section class="upload-section" id="upload">
+                    <h2 style="text-align: center; margin-bottom: 2rem; color: #4a5568;">Kapsamlı Görsel Risk Analizi</h2>
+                    
+                    <div class="platform-selection">
+                        <label for="platformSelect">Paylaşacağınız Platformu Seçin:</label>
+                        <select id="platformSelect">
+                            <option value="general">Genel Platform</option>
+                            <option value="instagram">Instagram</option>
+                            <option value="tiktok">TikTok</option>
+                            <option value="facebook">Facebook</option>
+                            <option value="twitter">Twitter/X</option>
+                            <option value="linkedin">LinkedIn</option>
+                            <option value="snapchat">Snapchat</option>
+                            <option value="deepfake_app">Deepfake Uygulaması</option>
+                        </select>
+                    </div>
+
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">📸</div>
+                        <div class="upload-text">Görsel yüklemek için tıklayın veya sürükleyin</div>
+                        <div class="upload-subtext">Desteklenen formatlar: JPG, PNG, JPEG (Max 10MB)</div>
+                        <input type="file" class="file-input" id="fileInput" accept="image/*">
+                    </div>
+
+                    <div class="loading" id="loading">
+                        <div class="spinner"></div>
+                        <p>Görsel analiz ediliyor ve platform politikaları değerlendiriliyor...</p>
+                    </div>
+
+                    <div class="analysis-section" id="analysisSection">
+                        <div style="text-align: center; margin-bottom: 2rem;">
+                            <img id="imagePreview" class="image-preview" style="display: none;">
+                        </div>
+                        
+                        <h3 style="text-align: center; margin-bottom: 2rem; color: #4a5568;">Analiz Sonuçları</h3>
+                        <div class="analysis-grid">
+                            <div class="analysis-card">
+                                <h4>🔍 Deepfake Tespiti</h4>
+                                <div class="risk-meter">
+                                    <div class="risk-fill" id="deepfakeRisk"></div>
+                                </div>
+                                <p id="deepfakeResult">Analiz bekleniyor...</p>
+                                <div class="technical-details" id="deepfakeDetails"></div>
+                            </div>
+                            <div class="analysis-card">
+                                <h4>📜 Platform Gizlilik Riski</h4>
+                                <div class="risk-meter">
+                                    <div class="risk-fill" id="privacyRisk"></div>
+                                </div>
+                                <p id="privacyResult">Analiz bekleniyor...</p>
+                                <div class="tos-preview" id="tosPreview"></div>
+                            </div>
+                        </div>
+                        <div class="analysis-card" style="margin-top: 2rem;">
+                            <h4>⚖️ Composite Risk Değerlendirmesi</h4>
+                            <div class="risk-meter">
+                                <div class="risk-fill" id="compositeRisk"></div>
+                            </div>
+                            <p id="compositeResult">Analiz bekleniyor...</p>
+                            <div class="technical-details" id="recommendations"></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="tab-content" id="contractTab">
+                <section class="contract-analysis-section" id="contract">
+                    <h2 style="text-align: center; margin-bottom: 2rem; color: #4a5568;">Sözleşme & ToS Risk Analizi</h2>
+                    
+                    <div class="contract-input-area">
+                        <label for="contractText" style="display: block; margin-bottom: 1rem; font-weight: 600; color: #4a5568;">
+                            Üyelik Sözleşmesi, Gizlilik Politikası veya ToS Metnini Yapıştırın:
+                        </label>
+                        <textarea 
+                            id="contractText" 
+                            class="contract-textarea" 
+                            placeholder="Analiz edilecek sözleşme metnini buraya yapıştırın...
+
+Örnek: 
+• Üyelik sözleşmeleri
+• Gizlilik politikaları 
+• Kullanım şartları
+• Hizmet sözleşmeleri
+• Uygulama izinleri
+
+Sistem otomatik olarak risk unsurlarını tespit edecek ve kategorize edecektir."
+                        ></textarea>
+                        <button class="analyze-contract-btn" onclick="analyzeContract()">
+                            🔍 Sözleşme Analizi Yap
+                        </button>
+                    </div>
+
+                    <div class="contract-results" id="contractResults">
+                        <div class="summary-score" id="contractSummary">
+                            <h3 id="overallScore">Genel Risk Skoru: -</h3>
+                            <p id="overallDescription">Sözleşme analizi tamamlanmadı</p>
+                        </div>
+
+                        <div class="risk-category">
+                            <h4>🔴 Yüksek Risk Unsurları</h4>
+                            <div id="highRiskItems"></div>
+                        </div>
+
+                        <div class="risk-category">
+                            <h4>🟡 Orta Risk Unsurları</h4>
+                            <div id="mediumRiskItems"></div>
+                        </div>
+
+                        <div class="risk-category">
+                            <h4>🟢 Düşük Risk / Pozitif Unsurlar</h4>
+                            <div id="lowRiskItems"></div>
+                        </div>
+
+                        <div class="risk-category">
+                            <h4>💡 Öneriler ve Dikkat Edilmesi Gerekenler</h4>
+                            <div id="recommendations2"></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer style="background: rgba(0, 0, 0, 0.8); color: white; text-align: center; padding: 2rem 0; margin-top: 4rem;">
+        <div class="container">
+            <p>&copy; 2025 DeepGuard Pro. Gerçek AI destekli deepfake tespiti ve kapsamlı sözleşme risk analizi.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Tab switching functionality
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
+            document.getElementById(tab + 'Tab').classList.add('active');
+        }
+
+        // Image Upload and Analysis System
+        class ImageAnalyzer {
+            constructor() {
+                this.initializeUpload();
+                this.platformRisks = {
+                    'instagram': {
+                        risk: 'medium',
+                        description: 'Instagram moderate veri paylaşımı yapıyor',
+                        details: 'Metadata, konum ve face recognition kullanıyor'
+                    },
+                    'tiktok': {
+                        risk: 'high', 
+                        description: 'TikTok yüksek veri toplama riski',
+                        details: 'Biometric data, device info, yüz analizi yapıyor'
+                    },
+                    'facebook': {
+                        risk: 'high',
+                        description: 'Facebook kapsamlı veri toplama',
+                        details: 'Face recognition, targeting, profil oluşturma'
+                    },
+                    'twitter': {
+                        risk: 'medium',
+                        description: 'Twitter/X orta düzey risk',
+                        details: 'Public content, limited biometric scanning'
+                    },
+                    'linkedin': {
+                        risk: 'low',
+                        description: 'LinkedIn düşük risk profili',
+                        details: 'Professional platform, limited face scanning'
+                    },
+                    'snapchat': {
+                        risk: 'high',
+                        description: 'Snapchat AR ve face tracking',
+                        details: 'Augmented reality, extensive face mapping'
+                    },
+                    'deepfake_app': {
+                        risk: 'high',
+                        description: 'Deepfake uygulaması - kritik risk',
+                        details: 'Yüz verileriniz model eğitimi için kullanılabilir'
+                    },
+                    'general': {
+                        risk: 'medium',
+                        description: 'Genel platform riski',
+                        details: 'Platform belirsizliği nedeniyle orta risk'
+                    }
+                };
+            }
+
+            initializeUpload() {
+                const uploadArea = document.getElementById('uploadArea');
+                const fileInput = document.getElementById('fileInput');
+
+                // Click event
+                uploadArea.addEventListener('click', () => {
+                    fileInput.click();
+                });
+
+                // File input change
+                fileInput.addEventListener('change', (e) => {
+                    this.handleFile(e.target.files[0]);
+                });
+
+                // Drag and drop events
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.add('dragging');
+                });
+
+                uploadArea.addEventListener('dragleave', () => {
+                    uploadArea.classList.remove('dragging');
+                });
+
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.remove('dragging');
+                    this.handleFile(e.dataTransfer.files[0]);
+                });
+            }
+
+            handleFile(file) {
+                if (!file) return;
+
+                if (!file.type.startsWith('image/')) {
+                    alert('Lütfen sadece görsel dosyaları yükleyin.');
+                    return;
+                }
+
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('Dosya boyutu 10MB\'dan küçük olmalıdır.');
+                    return;
+                }
+
+                this.showLoading();
+                this.analyzeImage(file);
+            }
+
+            showLoading() {
+                document.getElementById('loading').style.display = 'block';
+                document.getElementById('analysisSection').style.display = 'none';
+            }
+
+            analyzeImage(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    // Show image preview
+                    const preview = document.getElementById('imagePreview');
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+
+                    // Simulate analysis delay
+                    setTimeout(() => {
+                        this.performAnalysis(file);
+                    }, 2000);
+                };
+                reader.readAsDataURL(file);
+            }
+
+            performAnalysis(file) {
+                // Simulate deepfake analysis
+                const deepfakeScore = Math.random();
+                const deepfakeRisk = deepfakeScore > 0.7 ? 'high' : deepfakeScore > 0.4 ? 'medium' : 'low';
+                
+                // Get platform risk
+                const platform = document.getElementById('platformSelect').value;
+                const platformRisk = this.platformRisks[platform];
+
+                // Update deepfake analysis
+                this.updateDeepfakeAnalysis(deepfakeRisk, deepfakeScore);
+                
+                // Update privacy analysis
+                this.updatePrivacyAnalysis(platformRisk);
+                
+                // Update composite risk
+                this.updateCompositeRisk(deepfakeRisk, platformRisk.risk);
+
+                // Show results
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('analysisSection').style.display = 'block';
+            }
+
+            updateDeepfakeAnalysis(risk, score) {
+                const fillElement = document.getElementById('deepfakeRisk');
+                const resultElement = document.getElementById('deepfakeResult');
+                const detailsElement = document.getElementById('deepfakeDetails');
+                
+                let percentage = Math.round(score * 100);
+                let riskClass = `risk-${risk}`;
+                
+                fillElement.className = `risk-fill ${riskClass}`;
+                fillElement.style.width = `${percentage}%`;
+                
+                let resultText = '';
+                let details = '';
+                
+                if (risk === 'high') {
+                    resultText = `⚠️ Yüksek deepfake riski tespit edildi (%${percentage})`;
+                    details = `
+                        <strong>Tespit edilen anomaliler:</strong><br>
+                        • Yüz simetrisi tutarsızlığı<br>
+                        • Piksel düzeyinde düzensizlikler<br>
+                        • Metadata eksiklikleri<br>
+                        • Göz hareketi pattern analizi şüpheli
+                    `;
+                } else if (risk === 'medium') {
+                    resultText = `🟡 Orta düzey şüpheli işaretler (%${percentage})`;
+                    details = `
+                        <strong>Tespit edilen işaretler:</strong><br>
+                        • Hafif yüz asimetrisi<br>
+                        • Bazı piksel anomalileri<br>
+                        • Metadata kısmen eksik<br>
+                        • Daha detaylı analiz öneriliyor
+                    `;
+                } else {
+                    resultText = `✅ Düşük deepfake riski (%${percentage})`;
+                    details = `
+                        <strong>Pozitif göstergeler:</strong><br>
+                        • Yüz simetrisi doğal<br>
+                        • Piksel dağılımı tutarlı<br>
+                        • Metadata tam ve doğru<br>
+                        • Göz hareketi doğal pattern
+                    `;
+                }
+                
+                resultElement.innerHTML = resultText;
+                detailsElement.innerHTML = details;
+            }
+
+            updatePrivacyAnalysis(platformRisk) {
+                const fillElement = document.getElementById('privacyRisk');
+                const resultElement = document.getElementById('privacyResult');
+                const tosElement = document.getElementById('tosPreview');
+                
+                let percentage = platformRisk.risk === 'high' ? 80 : platformRisk.risk === 'medium' ? 50 : 20;
+                let riskClass = `risk-${platformRisk.risk}`;
+                
+                fillElement.className = `risk-fill ${riskClass}`;
+                fillElement.style.width = `${percentage}%`;
+                
+                let icon = platformRisk.risk === 'high' ? '🔴' : platformRisk.risk === 'medium' ? '🟡' : '🟢';
+                resultElement.innerHTML = `${icon} ${platformRisk.description}`;
+                
+                tosElement.innerHTML = `
+                    <strong>Platform Politikası Özeti:</strong><br>
+                    ${platformRisk.details}<br><br>
+                    <em>Bu platform sizin görsel verilerinizi şu şekillerde kullanabilir:</em><br>
+                    • Yüz tanıma ve biometric analiz<br>
+                    • Reklam hedefleme için profil oluşturma<br>
+                    • Üçüncü taraf paylaşımları<br>
+                    • Makine öğrenmesi model eğitimi
+                `;
+            }
+
+            updateCompositeRisk(deepfakeRisk, privacyRisk) {
+                const fillElement = document.getElementById('compositeRisk');
+                const resultElement = document.getElementById('compositeResult');
+                const recommendationsElement = document.getElementById('recommendations');
+                
+                // Calculate composite risk
+                let riskScore = 0;
+                if (deepfakeRisk === 'high') riskScore += 40;
+                else if (deepfakeRisk === 'medium') riskScore += 20;
+                else riskScore += 10;
+                
+                if (privacyRisk === 'high') riskScore += 40;
+                else if (privacyRisk === 'medium') riskScore += 20;
+                else riskScore += 10;
+                
+                let finalRisk = riskScore > 60 ? 'high' : riskScore > 30 ? 'medium' : 'low';
+                let riskClass = `risk-${finalRisk}`;
+                
+                fillElement.className = `risk-fill ${riskClass}`;
+                fillElement.style.width = `${riskScore}%`;
+                
+                let resultText = '';
+                let recommendations = '';
+                
+                if (finalRisk === 'high') {
+                    resultText = `🚨 Yüksek risk - Paylaşım önerilmez (${riskScore}%)`;
+                    recommendations = `
+                        <strong>Acil Öneriler:</strong><br>
+                        • Bu görseli bu platformda paylaşmayın<br>
+                        • Alternatif platformları değerlendirin<br>
+                        • Görsel üzerinde düzenleme yapın<br>
+                        • Gizlilik ayarlarını maksimuma çıkarın<br>
+                        • Yüz tanıma özelliklerini deaktive edin
+                    `;
+                } else if (finalRisk === 'medium') {
+                    resultText = `⚠️ Orta risk - Dikkatli paylaşım (${riskScore}%)`;
+                    recommendations = `
+                        <strong>Öneriler:</strong><br>
+                        • Gizlilik ayarlarını kontrol edin<br>
+                        • Konum bilgilerini kaldırın<br>
+                        • Yüz tanıma özelliklerini kapatın<br>
+                        • Hedef kitleyi sınırlandırın<br>
+                        • Düzenli olarak hesap ayarlarını gözden geçirin
+                    `;
+                } else {
+                    resultText = `✅ Düşük risk - Güvenli paylaşım (${riskScore}%)`;
+                    recommendations = `
+                        <strong>Güvenli Paylaşım İçin:</strong><br>
+                        • Mevcut gizlilik ayarlarını koruyun<br>
+                        • Düzenli güvenlik kontrolü yapın<br>
+                        • Bilinmeyen hesaplarla etkileşimi sınırlandırın<br>
+                        • Platform güncellemelerini takip edin
+                    `;
+                }
+                
+                resultElement.innerHTML = resultText;
+                recommendationsElement.innerHTML = recommendations;
+            }
+        }
+
+        // Contract Analysis System
+        class ContractAnalyzer {
+            constructor() {
+                this.riskKeywords = {
+                    high: [
+                        'biometric data', 'face recognition', 'personal information sharing',
+                        'third party access', 'unlimited rights', 'perpetual license',
+                        'no liability', 'arbitration mandatory', 'class action waiver',
+                        'automatic renewal', 'difficult cancellation', 'data mining',
+                        'biyometrik veri', 'yüz tanıma', 'kişisel bilgi paylaşımı',
+                        'üçüncü taraf erişim', 'sınırsız haklar', 'sürekli lisans',
+                        'sorumluluk yok', 'zorunlu tahkim', 'otomatik yenileme'
+                    ],
+                    medium: [
+                        'data collection', 'cookies', 'analytics', 'targeted advertising',
+                        'location tracking', 'device information', 'usage patterns',
+                        'limited warranty', 'service interruption', 'content moderation',
+                        'veri toplama', 'çerezler', 'analitik', 'hedefli reklam',
+                        'konum takibi', 'cihaz bilgisi', 'kullanım kalıpları'
+                    ],
+                    low: [
+                        'data encryption', 'user control', 'privacy by design',
+                        'gdpr compliance', 'opt-out available', 'transparent policies',
+                        'regular audits', 'data minimization', 'user rights',
+                        'veri şifreleme', 'kullanıcı kontrolü', 'gizlilik tasarımı',
+                        'gdpr uyumlu', 'çıkış hakkı', 'şeffaf politikalar'
+                    ]
+                };
+            }
+
+            analyzeContract(text) {
+                if (!text.trim()) {
+                    alert('Lütfen analiz edilecek sözleşme metnini girin.');
+                    return;
+                }
+
+                const results = {
+                    high: [],
+                    medium: [],
+                    low: [],
+                    overall: 0
+                };
+
+                const lowerText = text.toLowerCase();
+
+                // Check for high risk keywords
+                this.riskKeywords.high.forEach(keyword => {
+                    if (lowerText.includes(keyword.toLowerCase())) {
+                        results.high.push(this.createRiskItem(keyword, 'high'));
+                        results.overall += 15;
+                    }
+                });
+
+                // Check for medium risk keywords
+                this.riskKeywords.medium.forEach(keyword => {
+                    if (lowerText.includes(keyword.toLowerCase())) {
+                        results.medium.push(this.createRiskItem(keyword, 'medium'));
+                        results.overall += 8;
+                    }
+                });
+
+                // Check for low risk (positive) keywords
+                this.riskKeywords.low.forEach(keyword => {
+                    if (lowerText.includes(keyword.toLowerCase())) {
+                        results.low.push(this.createRiskItem(keyword, 'low'));
+                        results.overall -= 5;
+                    }
+                });
+
+                // Additional analysis based on text length and complexity
+                const wordCount = text.split(/\s+/).length;
+                if (wordCount > 5000) {
+                    results.high.push('Aşırı uzun sözleşme metni - karmaşık şartlar gizlenmiş olabilir');
+                    results.overall += 10;
+                }
+
+                // Cap the overall score
+                results.overall = Math.max(0, Math.min(100, results.overall));
+
+                return results;
+            }
+
+            createRiskItem(keyword, level) {
+                const descriptions = {
+                    'biometric data': 'Biyometrik veri toplama - yüz, parmak izi gibi veriler',
+                    'face recognition': 'Yüz tanıma teknolojisi kullanımı',
+                    'personal information sharing': 'Kişisel bilgilerin üçüncü taraflarla paylaşımı',
+                    'third party access': 'Üçüncü taraf şirketlere veri erişimi',
+                    'unlimited rights': 'Şirketin verileriniz üzerinde sınırsız hakları',
+                    'perpetual license': 'Sürekli ve geri alınamaz lisans hakkı',
+                    'no liability': 'Şirketin sorumluluk reddi',
+                    'arbitration mandatory': 'Zorunlu tahkim - mahkeme hakkından feragat',
+                    'class action waiver': 'Toplu dava hakkından feragat',
+                    'automatic renewal': 'Otomatik yenileme - fark etmeden ücret kesintisi',
+                    'data collection': 'Veri toplama faaliyetleri',
+                    'cookies': 'Çerez kullanımı ve takibi',
+                    'analytics': 'Analitik ve davranış analizi',
+                    'targeted advertising': 'Hedefli reklam gösterimi',
+                    'location tracking': 'Konum takibi',
+                    'data encryption': 'Veri şifreleme koruması',
+                    'user control': 'Kullanıcı kontrolü ve seçenekleri',
+                    'gdpr compliance': 'GDPR uyumluluğu',
+                    'opt-out available': 'Çıkış hakkı mevcut'
+                };
+
+                return {
+                    keyword,
+                    description: descriptions[keyword] || `${keyword} kullanımı tespit edildi`,
+                    level
+                };
+            }
+        }
+
+        // Contract analysis function
+        function analyzeContract() {
+            const text = document.getElementById('contractText').value;
+            const analyzer = new ContractAnalyzer();
+            const results = analyzer.analyzeContract(text);
+            
+            if (!results) return;
+
+            // Update overall score
+            const scoreElement = document.getElementById('overallScore');
+            const descriptionElement = document.getElementById('overallDescription');
+            
+            let riskLevel = results.overall > 60 ? 'Yüksek' : results.overall > 30 ? 'Orta' : 'Düşük';
+            let riskColor = results.overall > 60 ? '#e53e3e' : results.overall > 30 ? '#ed8936' : '#48bb78';
+            
+            scoreElement.textContent = `Genel Risk Skoru: ${results.overall}/100 (${riskLevel})`;
+            scoreElement.style.color = riskColor;
+            
+            descriptionElement.textContent = results.overall > 60 ? 
+                'Bu sözleşmede ciddi gizlilik riskleri tespit edildi' :
+                results.overall > 30 ? 
+                'Bu sözleşmede orta düzey riskler bulunuyor' :
+                'Bu sözleşme nispeten güvenli görünüyor';
+
+            // Update risk categories
+            updateRiskCategory('highRiskItems', results.high, 'high');
+            updateRiskCategory('mediumRiskItems', results.medium, 'medium');
+            updateRiskCategory('lowRiskItems', results.low, 'low');
+            
+            // Update recommendations
+            updateRecommendations(results.overall);
+            
+            // Show results
+            document.getElementById('contractResults').style.display = 'block';
+        }
+
+        function updateRiskCategory(elementId, items, level) {
+            const element = document.getElementById(elementId);
+            
+            if (items.length === 0) {
+                element.innerHTML = '<div class="risk-item">Bu kategoride risk unsuru tespit edilmedi.</div>';
+                return;
+            }
+
+            element.innerHTML = items.map(item => {
+                if (typeof item === 'string') {
+                    return `<div class="risk-item ${level}">${item}</div>`;
+                } else {
+                    return `<div class="risk-item ${level}">
+                        <strong>${item.keyword}</strong><br>
+                        ${item.description}
+                    </div>`;
+                }
+            }).join('');
+        }
+
+        function updateRecommendations(score) {
+            const element = document.getElementById('recommendations2');
+            
+            let recommendations = [];
+            
+            if (score > 60) {
+                recommendations = [
+                    'Bu sözleşmeyi imzalamadan önce hukuki danışmanlık alın',
+                    'Alternatif hizmet sağlayıcılarını araştırın',
+                    'Kişisel verilerinizi korumak için VPN kullanın',
+                    'Hesap ayarlarından gizlilik seçeneklerini maksimuma çıkarın',
+                    'Düzenli olarak hesabınızı ve verilerinizi kontrol edin'
+                ];
+            } else if (score > 30) {
+                recommendations = [
+                    'Sözleşme şartlarını dikkatlice okuyun',
+                    'Gizlilik ayarlarını kontrol edin',
+                    'Gereksiz izinleri iptal edin',
+                    'Hesap aktivitelerinizi düzenli takip edin',
+                    'Veri paylaşım seçeneklerini sınırlandırın'
+                ];
+            } else {
+                recommendations = [
+                    'Mevcut gizlilik ayarlarını koruyun',
+                    'Şirketin gizlilik politikası güncellemelerini takip edin',
+                    'Hesap güvenliğinizi düzenli kontrol edin',
+                    'Bilinmeyen kaynaklardan gelen bağlantılara dikkat edin'
+                ];
+            }
+            
+            element.innerHTML = recommendations.map(rec => 
+                `<div class="risk-item">${rec}</div>`
+            ).join('');
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            const imageAnalyzer = new ImageAnalyzer();
+            
+            // Smooth scrolling for navigation links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Add some sample contract text for demo
+            const sampleText = `
+KULLANIM ŞARTLARI VE GİZLİLİK POLİTİKASI
+
+1. VERİ TOPLAMA VE KULLANIM
+Hizmetimizi kullanırken, sizden çeşitli kişisel bilgiler talep edebiliriz. Bu bilgiler şunları içerebilir:
+- Kişisel kimlik bilgileri (ad, soyad, e-posta adresi)
+- Biyometrik veriler (yüz tanıma, parmak izi)
+- Konum bilgileri ve cihaz bilgileri
+- Kullanım kalıpları ve analytics verileri
+
+2. ÜÇÜNCÜ TARAF PAYLAŞIMI
+Toplanan verileriniz, iş ortaklarımız ve reklam ağlarımız ile paylaşılabilir. Bu paylaşım, hedefli reklam gösterimi ve hizmet iyileştirme amacıyla yapılır.
+
+3. SORUMLULUK REDDİ
+Şirketimiz, hizmet kesintileri, veri kaybı veya güvenlik ihlalleri konusunda herhangi bir sorumluluk kabul etmez.
+
+4. ZORUNLU TAHKİM
+Herhangi bir uyuşmazlık durumunda, mahkeme yerine tahkim yoluna başvurulması zorunludur.
+
+5. OTOMATİK YENİLEME
+Üyeliğiniz, iptal etmediğiniz sürece otomatik olarak yenilenir ve hesabınızdan ücret kesilir.
+            `;
+
+            // Add sample text button
+            const contractTextarea = document.getElementById('contractText');
+            const sampleButton = document.createElement('button');
+            sampleButton.textContent = '📋 Örnek Sözleşme Metni Yükle';
+            sampleButton.className = 'btn btn-secondary';
+            sampleButton.style.marginTop = '10px';
+            sampleButton.onclick = function() {
+                contractTextarea.value = sampleText.trim();
+            };
+            
+            contractTextarea.parentNode.appendChild(sampleButton);
+        });
+    </script>
+</body>
+</html>
